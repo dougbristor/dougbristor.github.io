@@ -114,6 +114,7 @@ const PINS = [
   { repo: "brotprobe", title: "Brotprobe", domain: "Instruments", status: "Intent only", pushed: "2026-10-21", licence: "MIT",
     demo: null, text: "A command-line kit for testing Bristorian and quaternion fractals. Produces result data, not renders." },
   { repo: "orchard", title: "The Orchard", domain: "Instruments", status: "Intent only", pushed: "2026-10-16", licence: "MIT",
+    thumb: true, alt: "A tree up close, from the Orchard film: each tree is one agent.",
     demo: null, text: "A research instrument that assembles itself from AI agents. Parts arrive as they are made portable and checked." },
   { repo: "brot-pnp-open", title: "Brot P-vs-NP, open", domain: "Research", status: "Pilot", pushed: "2026-11-10", licence: "MIT",
     demo: null, text: "Finding is expensive, checking is cheap: an open, certificate-checked experiment on the Bristorbrot fractal." },
@@ -140,8 +141,8 @@ function tabs() {
 
 function card(p) {
   const thumb = el("div", { class: "thumb" });
-  if (p.demo) {
-    const img = el("img", { src: "thumbs/" + p.repo + ".webp", alt: "Screenshot of " + p.title, loading: "lazy", width: "640", height: "360" });
+  if (p.demo || p.thumb) {
+    const img = el("img", { src: "thumbs/" + p.repo + ".webp", alt: p.alt || "Screenshot of " + p.title, loading: "lazy", width: "640", height: "360" });
     img.addEventListener("error", () => thumb.replaceChildren(el("div", { class: "plain", text: p.repo })));
     thumb.append(img);
   } else {
