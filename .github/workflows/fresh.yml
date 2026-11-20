@@ -1,0 +1,30 @@
+name: Refresh dates
+# Manual only: run it from the Actions tab, or with `gh workflow run fresh.yml`.
+on: workflow_dispatch
+permissions:
+  contents: write
+  pages: write
+jobs:
+  fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write fresh.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: .github/fresh.sh
+      - name: Commit if it changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- fresh.json && [ -f fresh.json ] && git ls-files --error-unmatch fresh.json >/dev/null 2>&1; then
+            echo "nothing to commit"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fresh.json
+          git commit -m "Refresh dates"
+          git push
+          # a push made with the workflow token does not start a Pages build by itself
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" >/dev/null || echo "pages build request failed"
