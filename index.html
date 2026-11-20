@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bristorbrot on GitHub</title>
+<meta name="description" content="Demos and source for the Bristorbrot project: Bristorian fractals, the brotoid, the browser voice, and the instruments planned around them.">
+<link rel="canonical" href="https://bristorbrot.org/">
+<style>
+  :root {
+    --bg: #0b0d12; --surface: #12151d; --surface-hover: #181c27; --border: rgba(255,255,255,.09);
+    --ink: #eef1f7; --muted: #a0a8bb; --dim: #7a8399; --accent: #38e2c7; --accent-ink: #04201b;
+    --warn: #e6b450; --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f7fa; --surface: #fff; --surface-hover: #f0f2f7; --border: rgba(0,0,0,.12);
+      --ink: #14171f; --muted: #4a5266; --dim: #646d82; --accent: #0a7f6e; --accent-ink: #fff; --warn: #8a5a00;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7fa; --surface: #fff; --surface-hover: #f0f2f7; --border: rgba(0,0,0,.12);
+    --ink: #14171f; --muted: #4a5266; --dim: #646d82; --accent: #0a7f6e; --accent-ink: #fff; --warn: #8a5a00;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-sans); }
+  a { color: var(--accent); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 40px 0 20px; }
+  h1 { font-size: clamp(26px, 5vw, 38px); margin: 0 0 8px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 14px; }
+  .links a { margin-right: 18px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 14px 0; border-top: 1px solid var(--border); }
+  .tab { font: inherit; font-size: 14px; color: var(--muted); background: none; border: 1px solid var(--border);
+         border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .tab:hover { background: var(--surface-hover); }
+  .tab[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .tab:focus-visible, .btn:focus-visible, .card a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; padding: 8px 0 32px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+          display: flex; flex-direction: column; }
+  .card:hover { background: var(--surface-hover); }
+  .thumb { aspect-ratio: 16/9; background: #05070a; position: relative; display: grid; place-items: center; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .plain { font: 600 20px var(--font-mono); color: var(--dim); text-align: center; padding: 12px; word-break: break-all; }
+  .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card h2 { font-size: 18px; margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 12px var(--font-mono); color: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; }
+  .chip.status { color: var(--warn); }
+  .chip.live { color: var(--accent); }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; flex: 1; }
+  .meta { font: 12px var(--font-mono); color: var(--dim); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+  .btn { font: inherit; font-size: 14px; border-radius: 8px; padding: 6px 12px; cursor: pointer; text-decoration: none;
+         border: 1px solid var(--border); background: none; color: var(--ink); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .btn:hover { filter: brightness(1.12); }
+  footer { border-top: 1px solid var(--border); padding: 18px 0 40px; color: var(--dim); font-size: 13px; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none; z-index: 10; padding: 16px; }
+  .modal.open { display: flex; flex-direction: column; }
+  .modal-head { display: flex; gap: 12px; align-items: center; padding: 0 0 10px; color: #fff; }
+  .modal-head .title { flex: 1; font-weight: 600; }
+  .modal-stage { flex: 1; background: #000; border-radius: 10px; overflow: hidden; }
+  .modal-stage iframe { width: 100%; height: 100%; border: 0; }
+  .empty { color: var(--muted); padding: 32px 0; }
+  .sr { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Bristorbrot on GitHub</h1>
+    <p class="lede">Fractals in an ordered hypercomplex algebra, the pages that explain them, a browser voice, and the instruments planned around them. Each tile says plainly whether there is something to run or only source.</p>
+    <div class="links"><a href="https://bristorbrot.org/">bristorbrot.org</a><a href="https://github.com/dougbristor?tab=repositories">All repositories</a></div>
+  </header>
+
+  <div class="bar" role="group" aria-label="Filter by domain" id="tabs"></div>
+  <main><div class="grid" id="grid" aria-live="polite"></div></main>
+
+  <footer>
+    <div id="snap"></div>
+    <div>Demos open from GitHub Pages. Some pages need a GPU with WebGL2.</div>
+    <div>Inspired by the project index at <a href="https://snicker02.github.io/" target="_blank" rel="noopener">snicker02.github.io</a> by Michael A Prostka. The code here is written fresh.</div>
+  </footer>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+  <div class="modal-head">
+    <span class="title" id="mtitle"></span>
+    <a class="btn" id="mopen" target="_blank" rel="noopener">Open in a new tab</a>
+    <button class="btn" id="mclose" type="button">Close</button>
+  </div>
+  <div class="modal-stage" id="mstage"></div>
+</div>
+
+<script>
+// The pin list is the source of truth: a repo appears here only when it is listed. The API adds freshness, never new tiles.
+const SNAPSHOT_DATE = "2026-11-20";
+const GITHUB_USER = "dougbristor";
+const DOMAINS = ["Rendering", "Brotoid", "Voice", "Instruments", "Research"];
+const PINS = [
+  { repo: "bristorbrot", title: "Bristorbrot", domain: "Rendering", status: "Working", pushed: "2026-11-13", licence: "MIT",
+    demo: "https://dougbristor.github.io/bristorbrot/packs/brot_viewer/v3/",
+    text: "3D and 4D Mandelbrot and Julia sets in an ordered hypercomplex algebra, raymarched in WebGL2. The demo is the v3 viewer." },
+  { repo: "lotus_flame", title: "Lotus flame", domain: "Rendering", status: "Working", pushed: "2026-11-13", licence: "MIT",
+    demo: "https://dougbristor.github.io/lotus_flame/bare.html",
+    text: "A 4-D fractal flame that blooms: rolling IFS points, b-splats and a 3D Gaussian Splatting export, in one self-contained WebGL2 page. The demo is the canvas-only page." },
+  { repo: "brotoid", title: "Brotoid", domain: "Brotoid", status: "Working", pushed: "2026-11-13", licence: "MIT",
+    demo: "https://demo.bristorbrot.org/brotoid/",
+    text: "Online documentation of the brotoid and its cousin the chirobrot, with a few live tools. This demo is a copy; the live page is on bristorbrot.org." },
+  { repo: "brotvoice", title: "Brotvoice", domain: "Voice", status: "Code only", pushed: "2026-11-01", licence: "GPL-3.0",
+    demo: null, text: "A browser voice engine for the Brot. Code only: the model and engines are named and hashed, not included." },
+  { repo: "brotoscope", title: "Brotoscope", domain: "Instruments", status: "Intent only", pushed: "2026-10-10", licence: "MIT",
+    demo: null, text: "A research instrument for comparing Bristorian and quaternion fractals. No code yet." },
+  { repo: "brotprobe", title: "Brotprobe", domain: "Instruments", status: "Intent only", pushed: "2026-10-21", licence: "MIT",
+    demo: null, text: "A command-line kit for testing Bristorian and quaternion fractals. Produces result data, not renders." },
+  { repo: "orchard", title: "The Orchard", domain: "Instruments", status: "Intent only", pushed: "2026-10-16", licence: "MIT",
+    demo: null, text: "A research instrument that assembles itself from AI agents. Parts arrive as they are made portable and checked." },
+  { repo: "brot-pnp-open", title: "Brot P-vs-NP, open", domain: "Research", status: "Pilot", pushed: "2026-11-10", licence: "MIT",
+    demo: null, text: "Finding is expensive, checking is cheap: an open, certificate-checked experiment on the Bristorbrot fractal." }
+];
+
+let active = "All";
+const $ = id => document.getElementById(id);
+const el = (tag, attrs, ...kids) => { const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "text") n.textContent = v; else n.setAttribute(k, v); }
+  for (const c of kids) if (c) n.append(c); return n; };
+const fmt = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" }); };
+
+function tabs() {
+  const box = $("tabs"); box.replaceChildren();
+  for (const d of ["All", ...DOMAINS]) {
+    if (d !== "All" && !PINS.some(p => p.domain === d)) continue;
+    const b = el("button", { class: "tab", type: "button", "aria-pressed": String(d === active), text: d });
+    b.addEventListener("click", () => { active = d; tabs(); render(); });
+    box.append(b);
+  }
+}
+
+function card(p) {
+  const thumb = el("div", { class: "thumb" });
+  if (p.demo) {
+    const img = el("img", { src: "thumbs/" + p.repo + ".webp", alt: "Screenshot of " + p.title, loading: "lazy", width: "640", height: "360" });
+    img.addEventListener("error", () => thumb.replaceChildren(el("div", { class: "plain", text: p.repo })));
+    thumb.append(img);
+  } else {
+    thumb.append(el("div", { class: "plain", text: p.repo }));
+  }
+  const chips = el("div", { class: "chips" },
+    el("span", { class: "chip", text: p.domain }),
+    el("span", { class: "chip " + (p.demo ? "live" : "status"), text: p.demo ? "Live demo" : p.status }),
+    el("span", { class: "chip", text: p.licence }));
+  const actions = el("div", { class: "actions" });
+  if (p.demo) {
+    const prev = el("button", { class: "btn primary", type: "button", text: "Preview" });
+    prev.addEventListener("click", () => openModal(p));
+    actions.append(prev, el("a", { class: "btn", href: p.demo, target: "_blank", rel: "noopener", text: "Open demo" }));
+  }
+  actions.append(el("a", { class: "btn", href: "https://github.com/" + GITHUB_USER + "/" + p.repo, target: "_blank", rel: "noopener", text: "Source" }));
+  const meta = el("div", { class: "meta", text: "Updated " + fmt(p.pushed) });
+  meta.dataset.repo = p.repo;
+  return el("article", { class: "card" }, thumb,
+    el("div", { class: "body" }, el("h2", { text: p.title }), chips, el("p", { text: p.text }), meta, actions));
+}
+
+function render() {
+  const list = PINS.filter(p => active === "All" || p.domain === active);
+  const g = $("grid"); g.replaceChildren();
+  if (!list.length) g.append(el("div", { class: "empty", text: "Nothing pinned in this domain." }));
+  for (const p of list) g.append(card(p));
+}
+
+let lastFocus = null;
+function openModal(p) {
+  lastFocus = document.activeElement;
+  $("mtitle").textContent = p.title; $("mopen").href = p.demo;
+  const f = el("iframe", { src: p.demo, title: p.title + " demo", sandbox: "allow-scripts allow-same-origin" });
+  $("mstage").replaceChildren(f); $("modal").classList.add("open"); $("mclose").focus();
+}
+function closeModal() { $("mstage").replaceChildren(); $("modal").classList.remove("open"); if (lastFocus) lastFocus.focus(); }
+$("mclose").addEventListener("click", closeModal);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("modal").classList.contains("open")) closeModal(); });
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(); });
+
+// Freshness only: ask the API at most once an hour per visitor, remember when, and fall back to the snapshot silently.
+const HOUR = 3600e3;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+                set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+async function freshen() {
+  const snap = $("snap"), last = +store.get("bb_checked") || 0;
+  let data = null; try { data = JSON.parse(store.get("bb_repos") || "null"); } catch {}
+  if (!data || Date.now() - last > HOUR) {
+    try {
+      const r = await fetch("https://api.github.com/users/" + GITHUB_USER + "/repos?per_page=100&type=owner&sort=pushed", { headers: { Accept: "application/vnd.github+json" } });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      data = (await r.json()).map(x => ({ name: x.name, pushed_at: x.pushed_at }));
+      store.set("bb_repos", JSON.stringify(data)); store.set("bb_checked", String(Date.now()));
+      snap.textContent = "Dates checked against GitHub just now. Tiles are a fixed list, last reviewed " + fmt(SNAPSHOT_DATE) + ".";
+    } catch { data = null; }
+  } else {
+    snap.textContent = "Dates checked against GitHub within the last hour. Tiles are a fixed list, last reviewed " + fmt(SNAPSHOT_DATE) + ".";
+  }
+  if (!data) { snap.textContent = "Showing the list as reviewed on " + fmt(SNAPSHOT_DATE) + "; GitHub could not be reached for newer dates."; return; }
+  const by = new Map(data.map(x => [x.name, x.pushed_at]));
+  for (const p of PINS) { const iso = by.get(p.repo); if (iso) { p.pushed = iso; const m = document.querySelector('.meta[data-repo="' + p.repo + '"]'); if (m) m.textContent = "Updated " + fmt(iso); } }
+}
+
+$("snap").textContent = "Showing the list as reviewed on " + fmt(SNAPSHOT_DATE) + ".";
+tabs(); render(); freshen();
+</script>
+</body>
+</html>
