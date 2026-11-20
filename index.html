@@ -101,12 +101,9 @@ const SNAPSHOT_DATE = "2026-11-20";
 const GITHUB_USER = "dougbristor";
 const DOMAINS = ["Rendering", "Brotoid", "Voice", "Instruments", "Research"];
 const PINS = [
-  { repo: "bristorbrot", title: "Bristorbrot", domain: "Rendering", status: "Working", pushed: "2026-11-13", licence: "MIT",
+  { repo: "bristorbrot", title: "Bristorbrot", domain: "Rendering", status: "Working", pushed: "2026-11-20", licence: "MIT",
     demo: "https://dougbristor.github.io/bristorbrot/packs/brot_viewer/v3/",
     text: "3D and 4D Mandelbrot and Julia sets in an ordered hypercomplex algebra, raymarched in WebGL2. The demo is the v3 viewer." },
-  { repo: "lotus_flame", title: "Lotus flame", domain: "Rendering", status: "Working", pushed: "2026-11-13", licence: "MIT",
-    demo: "https://dougbristor.github.io/lotus_flame/bare.html",
-    text: "A 4-D fractal flame that blooms: rolling IFS points, b-splats and a 3D Gaussian Splatting export, in one self-contained WebGL2 page. The demo is the canvas-only page." },
   { repo: "brotoid", title: "Brotoid", domain: "Brotoid", status: "Working", pushed: "2026-11-13", licence: "MIT",
     demo: "https://demo.bristorbrot.org/brotoid/",
     text: "Online documentation of the brotoid and its cousin the chirobrot, with a few live tools. This demo is a copy; the live page is on bristorbrot.org." },
@@ -119,7 +116,9 @@ const PINS = [
   { repo: "orchard", title: "The Orchard", domain: "Instruments", status: "Intent only", pushed: "2026-10-16", licence: "MIT",
     demo: null, text: "A research instrument that assembles itself from AI agents. Parts arrive as they are made portable and checked." },
   { repo: "brot-pnp-open", title: "Brot P-vs-NP, open", domain: "Research", status: "Pilot", pushed: "2026-11-10", licence: "MIT",
-    demo: null, text: "Finding is expensive, checking is cheap: an open, certificate-checked experiment on the Bristorbrot fractal." }
+    demo: null, text: "Finding is expensive, checking is cheap: an open, certificate-checked experiment on the Bristorbrot fractal." },
+  { repo: "bristor.lean", title: "bristor.lean", domain: "Research", status: "Checked in Lean", good: true, pushed: "2026-11-20", licence: "MIT · CC0",
+    demo: null, text: "The Bristorian B3 product checked in Lean 4: 13 theorems, 19 test vectors, and 7 planted false claims that must fail. Source only; the check runs from the command line." }
 ];
 
 let active = "All";
@@ -150,7 +149,7 @@ function card(p) {
   }
   const chips = el("div", { class: "chips" },
     el("span", { class: "chip", text: p.domain }),
-    el("span", { class: "chip " + (p.demo ? "live" : "status"), text: p.demo ? "Live demo" : p.status }),
+    el("span", { class: "chip " + (p.demo || p.good ? "live" : "status"), text: p.demo ? "Live demo" : p.status }),
     el("span", { class: "chip", text: p.licence }));
   const actions = el("div", { class: "actions" });
   if (p.demo) {
